@@ -45,6 +45,10 @@ jobs:
             platform: darwin
             arch: arm64
             npm_config_arch: arm64
+          - os: macos-latest
+            platform: darwin
+            arch: amd64
+            npm_config_arch: amd64
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v2
