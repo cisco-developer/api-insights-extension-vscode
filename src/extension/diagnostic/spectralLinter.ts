@@ -5,13 +5,14 @@ import * as SpectralCore from '@stoplight/spectral-core';
 import rulesets from '@cisco-developer/api-insights-openapi-rulesets';
 import { BASE_NAME } from '../../const';
 import { Analyses } from '../../types';
+import { isWebExt } from '../../common';
 
 enum SeverityTypes {
-    Error,
-    Warning,
-    Information,
-    Hint,
-  }
+  Error,
+  Warning,
+  Information,
+  Hint,
+}
 
 export class SpectralLinter {
   spectral;
@@ -23,14 +24,19 @@ export class SpectralLinter {
   public analysesMap: { [key: string]: Analyses[] } = {};
 
   constructor(ruleset: any) {
-    this.spectral = new SpectralCore.Spectral();
-    this.spectral.setRuleset(ruleset);
+    if (!isWebExt()) {
+      this.spectral = new SpectralCore.Spectral();
+      this.spectral.setRuleset(ruleset);
+    }
     this.collection = vscode.languages.createDiagnosticCollection(
       this.collectionName,
     );
   }
 
   async lint(document: TextDocument) {
+    if (!this.spectral) {
+      return;
+    }
     const { uri } = document;
     const spec = document.getText();
     const res = await this.spectral.run(spec);

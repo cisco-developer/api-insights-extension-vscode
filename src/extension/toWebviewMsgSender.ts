@@ -26,6 +26,7 @@ import {
   API_SERVICE_MST_TYPES,
   SIDEBAR_MSG_TYPES,
   DIFF_SUMMARY_MSG_TYPES,
+  isWebExt,
 } from '../common';
 import { APIService, APIServiceSpec, FileQuery } from '../types';
 import {
@@ -220,10 +221,7 @@ export async function postUpdateDiffSummaryMesgToWebview(
         (newSpecAnalyse) => {
           const { summary, spec_score } = newSpecAnalyse;
           const newSpecNameMatch = newSpec.path.match(/\/([^/]*?)$/);
-          const mtime = newSpec.scheme === 'file'
-            ? statSync(newSpec.path).mtime
-            : new Date();
-
+          const mtime = (newSpec.scheme === 'file' && !isWebExt()) ? statSync(newSpec.path).mtime : new Date();
           const newSpecName = newSpecNameMatch
             ? newSpecNameMatch[1]
             : newSpec.path;

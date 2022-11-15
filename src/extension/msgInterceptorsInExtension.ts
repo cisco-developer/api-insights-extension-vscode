@@ -29,6 +29,7 @@ import {
   postErrorResponseMessage,
   stringifyReplacer,
   API_SERVICE_MST_TYPES,
+  isWebExt,
 } from '../common';
 import { APIService } from '../types';
 import { doAjax, getConfiguration, openSetting } from './util/extUtils';
@@ -72,13 +73,15 @@ export function saveFileMsgInterceptor(
 ) {
   if (msg.type === DEFAULT_MSG_TYPES.SAVE_FILE) {
     const { filePath, content } = msg.data;
-    writeFile(filePath, content, { encoding: 'utf-8' }, (err) => {
-      if (!err) {
-        postResponseMessage(webview, msg, {
-          status: 'ok',
-        });
-      }
-    });
+    if (!isWebExt()) {
+      writeFile(filePath, content, { encoding: 'utf-8' }, (err) => {
+        if (!err) {
+          postResponseMessage(webview, msg, {
+            status: 'ok',
+          });
+        }
+      });
+    }
   }
 }
 

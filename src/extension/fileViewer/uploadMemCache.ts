@@ -9,16 +9,16 @@ import {
   UploadCache,
 } from '../../types';
 
-import { Configuration } from '../../common';
+import { Configuration, isWebExt } from '../../common';
 import { getConfiguration } from '../util/extUtils';
 
 export default class UploadMemCache extends EventEmitter {
   private changed = false;
 
   constructor(
-      private cache: UploadCache,
-      private context: ExtensionContext,
-      public updateEventName: string,
+    private cache: UploadCache,
+    private context: ExtensionContext,
+    public updateEventName: string,
   ) {
     super();
   }
@@ -30,9 +30,9 @@ export default class UploadMemCache extends EventEmitter {
       context.globalState.update(UPLOAD_MEM_CACHE, state);
     }
     const cache = new UploadMemCache(
-        state as UploadCache,
-        context,
-        updateEventName,
+      state as UploadCache,
+      context,
+      updateEventName,
     );
     return cache;
   }
@@ -62,6 +62,9 @@ export default class UploadMemCache extends EventEmitter {
   }
 
   all() {
+    if (isWebExt()) {
+      return this.cache;
+    }
     return Object.keys(this.cache).reduce((cache, _) => {
       if (existsSync(_)) {
         cache[_] = { ...this.cache[_], mtime: statSync(_).ctime };

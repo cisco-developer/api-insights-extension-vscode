@@ -10,6 +10,7 @@ import { FileDiagnostics } from './file';
 import { SpectralLinter } from './spectralLinter';
 import { BASE_NAME } from '../../const';
 import { FixRange } from '../quickFix/interface';
+import { isWebExt } from '../../common';
 
 export default class Solutions implements CodeActionProvider {
   public static readonly providedCodeActionsKind = [
@@ -32,8 +33,8 @@ export default class Solutions implements CodeActionProvider {
   ): vscode.ProviderResult<(vscode.CodeAction | vscode.Command)[]> {
     if (context.diagnostics && document.uri.scheme !== FILE_SCHEME.read) {
       const analysesMap = this.fileDiagnostics.analysesMap[document.uri.path];
-      let analyses:Analyses[];
-      if (!analysesMap) {
+      let analyses: Analyses[];
+      if (!analysesMap && !isWebExt()) {
         analyses = this.localFileDiagnostics.analysesMap[document.uri.path];
       } else {
         analyses = analysesMap[1];

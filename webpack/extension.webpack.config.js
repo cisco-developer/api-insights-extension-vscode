@@ -17,6 +17,7 @@
  */
 
 const path = require('path');
+const webpack = require("webpack");
 const CopyPlugin = require('copy-webpack-plugin');
 
 const root = path.resolve(__dirname, '..');
@@ -47,6 +48,11 @@ module.exports = function (env, argv) {
       // support reading TypeScript and JavaScript files, 📖 -> https://github.com/TypeStrong/ts-loader
       extensions: ['.ts', '.js'],
     },
+    plugins: [
+      new webpack.DefinePlugin({
+        EXT_TYPE:"'ide'"
+      })
+    ],
     module: {
       rules: [
         {

@@ -23,7 +23,6 @@ import {
   StatusBarAlignment,
   ConfigurationChangeEvent,
 } from 'vscode';
-import { join } from 'path';
 import { getStoreServiceById, getStoreSpecById } from '../store';
 import { FILE_SCHEME, APIServiceSpec, FileQuery } from '../../types';
 import { BASE_NAME, AuthTypes } from '../../const';
@@ -52,9 +51,10 @@ export function getUriBySpec(spec: APIServiceSpec, scheme?: FILE_SCHEME) {
     }
   }
   if (!serviceName) return null;
+  const path = ['', BASE_NAME, getSpecFileName(serviceName, version, revision)].join('/');
   const uri = Uri.from({
     scheme,
-    path: join('/', BASE_NAME, getSpecFileName(serviceName, version, revision)),
+    path,
     query: `specId=${id}&serviceId=${service_id}&serviceName=${serviceName}&score=${score}&updatedAt=${updated_at}&version=${version}&revision=${revision}`,
   });
 

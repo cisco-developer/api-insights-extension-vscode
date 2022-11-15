@@ -163,3 +163,7 @@ export type DiffSummaryUpdateData = {
   oldSpec: APIServiceSpec | Uri;
   changeType: DiffSummaryChangeType;
 };
+
+declare global {
+  const EXT_TYPE: 'web' | 'ide';
+}

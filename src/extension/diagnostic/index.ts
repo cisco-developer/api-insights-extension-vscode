@@ -38,6 +38,7 @@ import * as FileDiagnostic from './file';
 import spectralLinter, { SpectralLinter } from './spectralLinter';
 import Solutions from './solutions';
 import { ADD_FILE_DIAGNOSTIC_COMMAND, CLEAN_DIAGNOSTICS_COMMAND, OPEN_FILE_DIAGNOSTIC_COMMAND, UPDATE_BAR_STATUS_COMMAND } from '../../commands';
+import { isWebExt } from '../../common';
 
 enum LINTER_SCENES {
   installed,
@@ -198,11 +199,15 @@ class Linter {
   ) {
     if (checkDocument(document)) {
       if (configurationAvailable) {
-        this.offlineLinter.deleteDiagnostic(document.uri);
+        if (!isWebExt()) {
+          this.offlineLinter.deleteDiagnostic(document.uri);
+        }
         this.lintSpec(document.getText(), document, scenes);
       } else {
         await this.cleanFileDiagnostic(document.uri);
-        this.offlineLinter.lint(document);
+        if (!isWebExt()) {
+          this.offlineLinter.lint(document);
+        }
       }
     }
   }
