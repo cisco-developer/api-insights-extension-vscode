@@ -7,6 +7,23 @@ on:
     branches: [main]
 
 jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Get current branch
+        id: check_branch
+        run: |
+          raw=$(git branch -r --contains ${{ github.ref }})
+          branch=${raw##*/}
+          echo "branch=$branch" >> $GITHUB_OUTPUT
+          echo "Current Branch is $branch."
+    outputs:
+      branch: ${{ steps.check_branch.outputs.branch }}
+
   build:
     runs-on: ubuntu-latest
     steps:
@@ -33,9 +50,9 @@ jobs:
           path: "*.vsix"
 
   integration:
-    if: github.event.pull_request.merged == true
+    if: needs.check.outputs.branch == 'main'
     runs-on: ubuntu-latest
-    needs: build
+    needs: [check, build]
     steps:
       - uses: actions/download-artifact@v3
 
