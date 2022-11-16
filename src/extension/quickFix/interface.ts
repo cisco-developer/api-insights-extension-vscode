@@ -22,7 +22,7 @@ import { Analyse } from '../../types';
 export type FixRange=Range|{start:Position, end:Position}
 
 export type Fix = (
-  analyse: Analyse,
+  analyse: Analyse&{range:{ start: Position; end: Position; }},
   document: TextDocument,
   range: Range
 ) => { title: string; edit: WorkspaceEdit } | null;

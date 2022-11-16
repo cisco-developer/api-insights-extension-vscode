@@ -16,6 +16,13 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+.vscode-light,.vscode-dark{
+    .service-detail_container{
+        p{
+            margin-bottom: 0;
+        }
+    }
+}
 
 .service-detail {
     &_container {
@@ -61,12 +68,8 @@
 
 .service {
     &-name {
-        // color: var(--vscode-foreground);
         font-size: 28px;
         margin-bottom: 0;
-    }
-
-    &-edit {
     }
 }
 

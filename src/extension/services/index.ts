@@ -52,7 +52,6 @@ export async function specAnalyze(
   const reqs = specAnalyzeRequests[uniqueId] || [];
   const reqNums = reqs.length;
   try {
-    console.log('specAnalyze uniqueId🌹🌹--', uniqueId);
     const promise = new Promise((resolve, reject) => {
       reqs.push([resolve, reject]);
     });
@@ -78,10 +77,8 @@ export async function specAnalyze(
     while ((item = reqs.shift())) {
       item[0](res.data);
     }
-    console.log('specAnalyze data🌹🌹--', res.data);
     return res.data;
   } catch (err: any) {
-    console.log('specAnalyze error🌹🌹--', err);
     let item;
     while ((item = reqs.shift())) {
       item[1](err);

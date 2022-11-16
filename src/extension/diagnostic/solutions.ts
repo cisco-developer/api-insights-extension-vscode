@@ -68,7 +68,8 @@ export default class Solutions implements CodeActionProvider {
     const actions: vscode.CodeAction[] = [];
     if (solutions) {
       solutions.forEach((item) => {
-        const res = item(analyse, document, range);
+        const { start, end } = diagnostic.range;
+        const res = item({ ...analyse, range: { start, end } }, document, range);
         if (!res) return null;
         const { title, edit } = res;
         const action = new vscode.CodeAction(
