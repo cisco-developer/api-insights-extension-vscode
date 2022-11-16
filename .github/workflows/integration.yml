@@ -2,7 +2,8 @@ name: Integration
 on:
   push:
     branches: [main]
-  pull_request:
+  pull_request_target:
+    types: [opened, edited, reopened, synchronize, review_requested, assigned]
     branches: [main]
 
 jobs:
@@ -32,6 +33,7 @@ jobs:
           path: "*.vsix"
 
   integration:
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     needs: build
     steps:
