@@ -4,8 +4,7 @@ import * as SpectralCore from '@stoplight/spectral-core';
 // @ts-ignore
 import rulesets from '@cisco-developer/api-insights-openapi-rulesets';
 import { BASE_NAME } from '../../const';
-import { Analyses } from '../../types';
-import { isWebExt } from '../../common';
+import { Analyses, Linter } from '../../types';
 
 enum SeverityTypes {
   Error,
@@ -14,7 +13,7 @@ enum SeverityTypes {
   Hint,
 }
 
-export class SpectralLinter {
+export class SpectralLinter implements Linter {
   spectral;
 
   collection: vscode.DiagnosticCollection;
@@ -24,10 +23,8 @@ export class SpectralLinter {
   public analysesMap: { [key: string]: Analyses[] } = {};
 
   constructor(ruleset: any) {
-    if (!isWebExt()) {
-      this.spectral = new SpectralCore.Spectral();
-      this.spectral.setRuleset(ruleset);
-    }
+    this.spectral = new SpectralCore.Spectral();
+    this.spectral.setRuleset(ruleset);
     this.collection = vscode.languages.createDiagnosticCollection(
       this.collectionName,
     );

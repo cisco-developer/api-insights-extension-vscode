@@ -1,7 +1,8 @@
 import {
   ExtensionContext,
+  Uri,
+  workspace,
 } from 'vscode';
-import { statSync, existsSync } from 'fs';
 import EventEmitter = require('events');
 import { UPLOAD_MEM_CACHE } from '../../const';
 import {
@@ -9,8 +10,9 @@ import {
   UploadCache,
 } from '../../types';
 
-import { Configuration, isWebExt } from '../../common';
+import { Configuration } from '../../common';
 import { getConfiguration } from '../util/extUtils';
+import { exists } from '../util';
 
 export default class UploadMemCache extends EventEmitter {
   private changed = false;
@@ -61,18 +63,25 @@ export default class UploadMemCache extends EventEmitter {
     return _setting.endpoint.trim() === setting.endpoint.trim();
   }
 
-  all() {
-    if (isWebExt()) {
-      return this.cache;
-    }
-    return Object.keys(this.cache).reduce((cache, _) => {
-      if (existsSync(_)) {
-        cache[_] = { ...this.cache[_], mtime: statSync(_).ctime };
+  async all() {
+    const cache:typeof this.cache = {};
+    const keys = Object.keys(this.cache);
+    const len = keys.length;
+    const res = [];
+    const getAvailableCache = async (url:string) => {
+      const uri = Uri.file(url);
+      if (await exists(uri)) {
+        const { mtime } = await workspace.fs.stat(uri);
+        cache[url] = { ...this.cache[url], mtime: new Date(mtime) };
       } else {
-        this.delete(_, false);
+        this.delete(url, false);
       }
-      return cache;
-    }, {} as typeof this.cache);
+    };
+    for (let i = 0; i < len; i += 1) {
+      res.push(getAvailableCache(keys[i]));
+    }
+    await Promise.all(res);
+    return cache;
   }
 
   delete(localPath: string, notify?: boolean) {

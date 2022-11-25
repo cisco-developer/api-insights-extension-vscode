@@ -22,9 +22,11 @@ import {
   window,
   StatusBarAlignment,
   ConfigurationChangeEvent,
+  TextDocument,
 } from 'vscode';
+import * as YAML from 'yaml';
 import { getStoreServiceById, getStoreSpecById } from '../store';
-import { FILE_SCHEME, APIServiceSpec, FileQuery } from '../../types';
+import { FILE_SCHEME, APIServiceSpec, FileQuery, SpecProps } from '../../types';
 import { BASE_NAME, AuthTypes } from '../../const';
 import { CONFIGURE_EXPLORER_COMMAND } from '../../commands';
 import { getSpecFileName } from '../../util';
@@ -93,7 +95,7 @@ export function stringToUint8Array(str: string) {
 export function debounce(fn: Function, delay: number, context?: any) {
   let time = 0;
   let timer: NodeJS.Timeout | null = null;
-  const _fn = function (...args: any[]) {
+  return function proxyFn(...args: any[]) {
     const now = Date.now();
     if (timer) {
       clearTimeout(timer);
@@ -110,7 +112,6 @@ export function debounce(fn: Function, delay: number, context?: any) {
       }, delay);
     }
   };
-  return _fn;
 }
 
 export async function checkConfiguration() {
@@ -273,4 +274,75 @@ export function handleHostBarStatusChange(
     onlineHostBarStatusItem.text = `$(vm-active) ${BASE_NAME}:${host}`;
     onlineHostBarStatusItem.tooltip = `Connected to ${endpoint}`;
   }
+}
+
+export async function exists(uri:Uri) {
+  try {
+    await workspace.fs.stat(uri);
+    return true;
+  } catch (err:any) {
+    if (typeof err === 'object' && err !== null) {
+      if (err.code === 'FileNotFound') {
+        return false;
+      }
+    }
+    return Promise.reject(err);
+  }
+}
+
+export function isLocalFile(document: TextDocument) {
+  const { uri } = document;
+  return uri.scheme === 'file';
+}
+
+function isRemoteSpecFile(document: TextDocument) {
+  const { uri } = document;
+  return (
+    (uri.scheme === FILE_SCHEME.edit || uri.scheme === FILE_SCHEME.read)
+    && uri.path.endsWith('.spec.json')
+  );
+}
+
+function isJsonOrYaml(document: TextDocument) {
+  const { languageId } = document;
+  return languageId === 'json' || languageId === 'yaml';
+}
+
+function isVersion2(text: SpecProps) {
+  if (text.swagger) {
+    return true;
+  }
+  return false;
+}
+
+function isVersion3(text: SpecProps) {
+  if (text.openapi) {
+    return true;
+  }
+  return false;
+}
+
+function isSpecFile(document: TextDocument) {
+  const text = document.getText();
+  try {
+    const parseText = YAML.parse(text);
+
+    if (isVersion2(parseText) || isVersion3(parseText)) {
+      return true;
+    }
+    return false;
+  } catch (err) {
+    console.log('invalid spec file: ', err);
+    return false;
+  }
+}
+
+export function checkDocument(document: TextDocument) {
+  if (isRemoteSpecFile(document)) {
+    return true;
+  }
+  if (document && isJsonOrYaml(document) && isSpecFile(document)) {
+    return true;
+  }
+  return false;
 }

@@ -17,7 +17,6 @@
  */
 
 import * as vscode from 'vscode';
-import { writeFile } from 'fs';
 import { AxiosRequestConfig } from 'axios';
 import { get } from 'lodash';
 import {
@@ -29,7 +28,6 @@ import {
   postErrorResponseMessage,
   stringifyReplacer,
   API_SERVICE_MST_TYPES,
-  isWebExt,
 } from '../common';
 import { APIService } from '../types';
 import { doAjax, getConfiguration, openSetting } from './util/extUtils';
@@ -61,27 +59,6 @@ export function openAPIServicePanelMsgInterceptor(
 ) {
   if (msg.type === SIDEBAR_MSG_TYPES.OPEN_API_SERVICE_PANEL) {
     handler(msg.data as APIService);
-  }
-}
-
-export function saveFileMsgInterceptor(
-  webview: WebviewVsc,
-  msg: WebviewReqMsg<
-    DEFAULT_MSG_TYPES.SAVE_FILE,
-    { filePath: string; content: string }
-  >,
-) {
-  if (msg.type === DEFAULT_MSG_TYPES.SAVE_FILE) {
-    const { filePath, content } = msg.data;
-    if (!isWebExt()) {
-      writeFile(filePath, content, { encoding: 'utf-8' }, (err) => {
-        if (!err) {
-          postResponseMessage(webview, msg, {
-            status: 'ok',
-          });
-        }
-      });
-    }
   }
 }
 

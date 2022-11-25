@@ -17,7 +17,7 @@
  */
 
 import { Uri, workspace } from 'vscode';
-import { statSync } from 'fs';
+
 import {
   WebviewVsc,
   DEFAULT_MSG_TYPES,
@@ -26,9 +26,8 @@ import {
   API_SERVICE_MST_TYPES,
   SIDEBAR_MSG_TYPES,
   DIFF_SUMMARY_MSG_TYPES,
-  isWebExt,
 } from '../common';
-import { APIService, APIServiceSpec, FileQuery } from '../types';
+import { APIService, APIServiceSpec } from '../types';
 import {
   fetchSpecDiff,
   fetchDocDiff,
@@ -67,10 +66,10 @@ export function postAPIServiceMsgToWebview(
   }
 }
 
-export function postUploadHistoryUpdateToWebview(
+export async function postUploadHistoryUpdateToWebview(
   webview: WebviewVsc | undefined,
 ) {
-  const uploadHistory = uploadMemCache.all();
+  const uploadHistory = await uploadMemCache.all();
   if (webview) {
     webview.postMessage({
       id: ID_GETTER(),
@@ -217,11 +216,15 @@ export async function postUpdateDiffSummaryMesgToWebview(
         }
       }
 
-      const _getNewSpecAnalyse = getLocalSpecAnalyse(newSpec).then(
-        (newSpecAnalyse) => {
+      const getNewSpecAnalyse = getLocalSpecAnalyse(newSpec).then(
+        async (newSpecAnalyse) => {
           const { summary, spec_score } = newSpecAnalyse;
           const newSpecNameMatch = newSpec.path.match(/\/([^/]*?)$/);
-          const mtime = (newSpec.scheme === 'file' && !isWebExt()) ? statSync(newSpec.path).mtime : new Date();
+          let mtime = new Date();
+          if (newSpec.scheme === 'file') {
+            const stat = await workspace.fs.stat(newSpec);
+            mtime = new Date(stat.mtime);
+          }
           const newSpecName = newSpecNameMatch
             ? newSpecNameMatch[1]
             : newSpec.path;
@@ -241,7 +244,7 @@ export async function postUpdateDiffSummaryMesgToWebview(
         },
       );
 
-      const _getOldSpecAnalyse = !(oldSpec instanceof Uri)
+      const getOldSpecAnalyse = !(oldSpec instanceof Uri)
         ? getOurSpecAnalyseSummary(oldSpec).then((summary) => {
           updateDiffSummary(webview, {
             oldSpecAnalyseSummary: summary,
@@ -271,8 +274,8 @@ export async function postUpdateDiffSummaryMesgToWebview(
       };
 
       res = await Promise.allSettled([
-        _getNewSpecAnalyse,
-        _getOldSpecAnalyse,
+        getNewSpecAnalyse,
+        getOldSpecAnalyse,
         _getDiffSummary(),
       ]);
     }

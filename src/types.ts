@@ -17,7 +17,7 @@
  */
 
 // eslint-disable-next-line import/extensions
-import { Uri } from 'vscode';
+import { Uri, DiagnosticCollection, TextDocument } from 'vscode';
 import { DiffSummaryChangeType } from './const';
 import { Configuration } from './common';
 
@@ -166,4 +166,16 @@ export type DiffSummaryUpdateData = {
 
 declare global {
   const EXT_TYPE: 'web' | 'ide';
+}
+
+export type SpecProps = {
+  swagger?: string;
+  openapi?: string;
+};
+
+export interface Linter {
+  collection: DiagnosticCollection
+  analysesMap: { [key: string]: Analyses[] }
+  lint(document: TextDocument):void | Thenable<void>;
+  deleteDiagnostic(uri: Uri):void
 }

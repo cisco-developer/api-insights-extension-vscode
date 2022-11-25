@@ -59,7 +59,8 @@ module.exports = function (env, argv) {
       mainFields: ["browser", "module", "main"], // look for `browser` entry point in imported node modules
       alias: {
         // provides alternate implementation for node module and source files
-        fs: path.resolve(__dirname,'fs-web.mock')
+        fs: path.resolve(__dirname,'fs-web.mock'),
+        os:"os-browserify"
       },
       fallback: {
         // Webpack 5 no longer polyfills Node.js core modules automatically.
