@@ -243,8 +243,4 @@ export function transformYamlObjToJson(obj: any) {
   return json;
 }
 
-export function isWebExt() {
-  return EXT_TYPE === 'web';
-}
-
 export const getRevisionFullname = (revision: APIServiceSpec) => `${revision.version} r${revision.revision}`;

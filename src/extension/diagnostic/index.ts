@@ -197,9 +197,9 @@ class ServiceLinter {
   }
 }
 
-export default async function start(context: ExtensionContext, localLinter?:Linter) {
+export default async function start(context: ExtensionContext, offlineLinter?:Linter) {
   FileDiagnostic.register(context);
-  const linter = new ServiceLinter(localLinter);
+  const linter = new ServiceLinter(offlineLinter);
 
   checkConfigurationAvailable();
 
@@ -234,7 +234,7 @@ export default async function start(context: ExtensionContext, localLinter?:Lint
     }),
     languages.registerCodeActionsProvider(
       'json',
-      new Solutions(FileDiagnostic.fileDiagnostics, localLinter),
+      new Solutions(FileDiagnostic.fileDiagnostics, offlineLinter),
       {
         providedCodeActionKinds: Solutions.providedCodeActionsKind,
       },

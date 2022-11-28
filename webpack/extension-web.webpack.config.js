@@ -49,8 +49,6 @@ module.exports = function (env, argv) {
     },
     externals: {
       vscode: "commonjs vscode", // the vscode-module is created on-the-fly and must be excluded. Add other modules that cannot be webpack'ed, 📖 -> https://webpack.js.org/configuration/externals/
-      // fs: "commonjs fs",
-      // path: "commonjs path",
     },
     resolve: {
       // support reading TypeScript and JavaScript files, 📖 -> https://github.com/TypeStrong/ts-loader
@@ -59,8 +57,8 @@ module.exports = function (env, argv) {
       mainFields: ["browser", "module", "main"], // look for `browser` entry point in imported node modules
       alias: {
         // provides alternate implementation for node module and source files
-        fs: path.resolve(__dirname,'fs-web.mock'),
-        os:"os-browserify"
+        os: "os-browserify",
+        '@cisco-developer/api-insights-offline-linter': false,
       },
       fallback: {
         // Webpack 5 no longer polyfills Node.js core modules automatically.
@@ -77,9 +75,6 @@ module.exports = function (env, argv) {
       new webpack.ProvidePlugin({
         process: "process/browser", // provide a shim for the global `process` variable
       }),
-      new webpack.DefinePlugin({
-        EXT_TYPE:"'web'"
-      })
     ],
     module: {
       rules: [{

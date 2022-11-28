@@ -47,12 +47,11 @@ module.exports = function (env, argv) {
     resolve: {
       // support reading TypeScript and JavaScript files, 📖 -> https://github.com/TypeStrong/ts-loader
       extensions: ['.ts', '.js'],
+      alias: {
+        // provides alternate implementation for node module and source files
+        '@cisco-developer/api-insights-offline-linter': path.resolve(__dirname, '..', 'src/extension/diagnostic/spectralLinter.ts'),
+      },
     },
-    plugins: [
-      new webpack.DefinePlugin({
-        EXT_TYPE:"'ide'"
-      })
-    ],
     module: {
       rules: [
         {
