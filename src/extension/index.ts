@@ -52,7 +52,7 @@ import {
 let extensionContext: ExtensionContext;
 let memCache = {};
 function startAPIInsights(context: ExtensionContext) {
-  specDiagnosticsRegister(context, isEmpty(offlineLinter) ? null : offlineLinter);
+  specDiagnosticsRegister(context, isEmpty(offlineLinter) ? undefined : offlineLinter);
 
   extensionContext = context;
   memCache = setupAxiosCache(context);
