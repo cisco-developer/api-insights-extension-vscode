@@ -4,12 +4,10 @@ import {
   Position,
   Range,
 } from 'vscode';
-import { Analyse, FILE_SCHEME, Analyses } from '../../types';
+import { Analyse, FILE_SCHEME, Analyses, Linter } from '../../types';
 import { getFixs } from '../quickFix/index';
 import { FileDiagnostics } from './file';
-import { SpectralLinter } from './spectralLinter';
 import { BASE_NAME } from '../../const';
-import { FixRange } from '../quickFix/interface';
 
 export default class Solutions implements CodeActionProvider {
   public static readonly providedCodeActionsKind = [
@@ -18,11 +16,11 @@ export default class Solutions implements CodeActionProvider {
 
   private fileDiagnostics: FileDiagnostics;
 
-  private localFileDiagnostics: SpectralLinter;
+  private localLinter?: Linter;
 
-  constructor(fileDiagnostics: FileDiagnostics, localFileDiagnostics:SpectralLinter) {
+  constructor(fileDiagnostics: FileDiagnostics, localLinter?:Linter) {
     this.fileDiagnostics = fileDiagnostics;
-    this.localFileDiagnostics = localFileDiagnostics;
+    this.localLinter = localLinter;
   }
 
   provideCodeActions(
@@ -32,9 +30,11 @@ export default class Solutions implements CodeActionProvider {
   ): vscode.ProviderResult<(vscode.CodeAction | vscode.Command)[]> {
     if (context.diagnostics && document.uri.scheme !== FILE_SCHEME.read) {
       const analysesMap = this.fileDiagnostics.analysesMap[document.uri.path];
-      let analyses:Analyses[];
+      let analyses: Analyses[] = [];
       if (!analysesMap) {
-        analyses = this.localFileDiagnostics.analysesMap[document.uri.path];
+        if (this.localLinter) {
+          analyses = this.localLinter.analysesMap[document.uri.path];
+        }
       } else {
         analyses = analysesMap[1];
       }
@@ -48,10 +48,6 @@ export default class Solutions implements CodeActionProvider {
         if (!analyse) return;
         const { data, ...other } = analyse;
         actions = actions.concat(this.createCodeActions(item, other, document, range as any));
-        // actions.push.apply(
-        //   actions,
-        //   Solutions.createCodeActions(item, other, document, range),
-        // );
       });
       return actions;
     }

@@ -26,16 +26,14 @@ import {
   TextDocument,
   ProgressLocation,
 } from 'vscode';
-import { join } from 'path';
+import { Utils } from 'vscode-uri';
 import { homedir } from 'os';
-import { existsSync } from 'fs';
 import * as YAML from 'yaml';
 import {
   READ_COMMAND,
   EDIT_COMMAND,
   UPLOAD_COMMAND,
   SAVE_ON_LOCAL_COMMAND,
-  UPDATE_FILE_DIAGNOSTIC_COLLECTION_COMMAND,
 } from '../../commands';
 import { DEFAULT_MSG_TYPES } from '../../common';
 import {
@@ -43,6 +41,7 @@ import {
   stringToUint8Array,
   specFileName as getSpecFileName,
   getQueryFromSpecUri,
+  exists,
 } from '../util';
 import {
   FILE_SCHEME,
@@ -54,6 +53,8 @@ import { specUploadToCloud } from '../services';
 import { APIServicePanelProvider } from '../webviewPanelProviders/serviceDetail';
 import fsProvider from './fsProvider';
 import UploadMemCache from './uploadMemCache';
+
+const { joinPath: join } = Utils;
 
 const DEFAULT_POSITION = new vscode.Position(0, 0);
 
@@ -147,11 +148,10 @@ class FileManager {
     const folders = workspace.workspaceFolders;
     const { uri: originUri } = document;
     const fileName = originUri.fsPath.split('/').slice(-1)[0];
-
-    let defaultUri = Uri.file(join(homedir(), 'Downloads', fileName));
+    let defaultUri = join(Uri.file(homedir()), 'Downloads', fileName);
 
     if (folders && folders.length > 0) {
-      defaultUri = Uri.file(join(folders[0].uri.path, fileName));
+      defaultUri = join(Uri.file(folders[0].uri.path), fileName);
     }
 
     const uri = await window.showSaveDialog({
@@ -246,15 +246,6 @@ class FileManager {
           }
         }
       });
-      // for (const path in obj.paths || {}) {
-      //   const re = new RegExp(path.replace(/\{[^\}]*?}/, '.*?'));
-      //   if (position?.match(re)) {
-      //     if (!pathDef || pathDef.length < path.length) {
-      //       pathDef = path;
-      //     }
-      //     continue;
-      //   }
-      // }
 
       if (pathDef) {
         const findIdx = text.indexOf(pathDef);
@@ -341,7 +332,7 @@ async function readFileCommand(
   position?: string | Position,
 ) {
   if (typeof spec === 'string') {
-    if (!existsSync(spec)) {
+    if (!await exists(Uri.file(spec))) {
       uploadMemCache.delete(spec);
     }
     await commands.executeCommand('vscode.open', Uri.file(spec));

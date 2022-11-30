@@ -4,16 +4,16 @@ import * as SpectralCore from '@stoplight/spectral-core';
 // @ts-ignore
 import rulesets from '@cisco-developer/api-insights-openapi-rulesets';
 import { BASE_NAME } from '../../const';
-import { Analyses } from '../../types';
+import { Analyses, Linter } from '../../types';
 
 enum SeverityTypes {
-    Error,
-    Warning,
-    Information,
-    Hint,
-  }
+  Error,
+  Warning,
+  Information,
+  Hint,
+}
 
-export class SpectralLinter {
+export class SpectralLinter implements Linter {
   spectral;
 
   collection: vscode.DiagnosticCollection;
@@ -31,6 +31,9 @@ export class SpectralLinter {
   }
 
   async lint(document: TextDocument) {
+    if (!this.spectral) {
+      return;
+    }
     const { uri } = document;
     const spec = document.getText();
     const res = await this.spectral.run(spec);

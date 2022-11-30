@@ -21,7 +21,6 @@ import {
   window, ExtensionContext, TextDocument, workspace, Uri, languages,
 } from 'vscode';
 
-import * as YAML from 'yaml';
 import {
   specAnalyze,
   CancelToken,
@@ -31,11 +30,10 @@ import {
 import { getTableData } from '../util/compliance';
 
 import { BASE_NAME, TIMEOUT_MS } from '../../const';
-import { Analyses, FILE_SCHEME } from '../../types';
+import { Analyses, Linter } from '../../types';
 
-import { debounce, checkIsLocal } from '../util';
+import { debounce, checkIsLocal, isLocalFile, checkDocument } from '../util';
 import * as FileDiagnostic from './file';
-import spectralLinter, { SpectralLinter } from './spectralLinter';
 import Solutions from './solutions';
 import { ADD_FILE_DIAGNOSTIC_COMMAND, CLEAN_DIAGNOSTICS_COMMAND, OPEN_FILE_DIAGNOSTIC_COMMAND, UPDATE_BAR_STATUS_COMMAND } from '../../commands';
 
@@ -44,14 +42,6 @@ enum LINTER_SCENES {
   changeActiveTextEditor,
   save,
 }
-
-type SpecProps = {
-  swagger?: string;
-  openapi?: string;
-};
-
-const version2Reg = /^2(\.(\d)+){0,2}$/;
-const version3Reg = /^3(\.(\d)+){0,2}$/;
 
 let cancelTokenSource: CancelTokenSourceType | null = null;
 let configurationAvailable = false;
@@ -65,67 +55,10 @@ function checkConfigurationAvailable() {
   }
 }
 
-function isLocalFile(document: TextDocument) {
-  const { uri } = document;
-  return uri.scheme === 'file';
-}
-
-function isRemoteSpecFile(document: TextDocument) {
-  const { uri } = document;
-  return (
-    (uri.scheme === FILE_SCHEME.edit || uri.scheme === FILE_SCHEME.read)
-    && uri.path.endsWith('.spec.json')
-  );
-}
-
-function isJsonOrYaml(document: TextDocument) {
-  const { languageId } = document;
-  return languageId === 'json' || languageId === 'yaml';
-}
-
-function isVersion2(text: SpecProps) {
-  if (text.swagger) {
-    return true;
-  }
-  return false;
-}
-
-function isVersion3(text: SpecProps) {
-  if (text.openapi) {
-    return true;
-  }
-  return false;
-}
-
-function isSpecFile(document: TextDocument) {
-  const text = document.getText();
-  try {
-    const parseText = YAML.parse(text);
-
-    if (isVersion2(parseText) || isVersion3(parseText)) {
-      return true;
-    }
-    return false;
-  } catch (err) {
-    console.log('invalid spec file: ', err);
-    return false;
-  }
-}
-
-function checkDocument(document: TextDocument) {
-  if (isRemoteSpecFile(document)) {
-    return true;
-  }
-  if (document && isJsonOrYaml(document) && isSpecFile(document)) {
-    return true;
-  }
-  return false;
-}
-
-class Linter {
+class ServiceLinter {
   public lintSpec;
 
-  constructor(private offlineLinter: SpectralLinter) {
+  constructor(private offlineLinter?: Linter) {
     this.lintSpec = debounce(this.lint, 2000, this);
   }
 
@@ -198,11 +131,15 @@ class Linter {
   ) {
     if (checkDocument(document)) {
       if (configurationAvailable) {
-        this.offlineLinter.deleteDiagnostic(document.uri);
+        if (this.offlineLinter) {
+          this.offlineLinter.deleteDiagnostic(document.uri);
+        }
         this.lintSpec(document.getText(), document, scenes);
       } else {
         await this.cleanFileDiagnostic(document.uri);
-        this.offlineLinter.lint(document);
+        if (this.offlineLinter) {
+          this.offlineLinter.lint(document);
+        }
       }
     }
   }
@@ -260,9 +197,9 @@ class Linter {
   }
 }
 
-export default async function start(context: ExtensionContext) {
+export default async function start(context: ExtensionContext, offlineLinter?:Linter) {
   FileDiagnostic.register(context);
-  const linter = new Linter(spectralLinter);
+  const linter = new ServiceLinter(offlineLinter);
 
   checkConfigurationAvailable();
 
@@ -297,7 +234,7 @@ export default async function start(context: ExtensionContext) {
     }),
     languages.registerCodeActionsProvider(
       'json',
-      new Solutions(FileDiagnostic.fileDiagnostics, spectralLinter),
+      new Solutions(FileDiagnostic.fileDiagnostics, offlineLinter),
       {
         providedCodeActionKinds: Solutions.providedCodeActionsKind,
       },

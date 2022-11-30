@@ -18,6 +18,9 @@
 
 import * as vscode from 'vscode';
 import { ExtensionContext } from 'vscode';
+// @ts-ignore
+import offlineLinter from '@cisco-developer/api-insights-offline-linter';
+import { isEmpty } from 'lodash';
 import { SidebarWebviewProvider } from './webviewPanelProviders/serviceList';
 import { DiffSummaryProvider } from './webviewPanelProviders/diffSummary';
 import { WelcomePanelProvider } from './webviewPanelProviders/welcome';
@@ -26,6 +29,7 @@ import specDiagnosticsRegister from './diagnostic';
 import specDiffRegister from './diff';
 import fileViewerRegister from './fileViewer';
 import specCompare from './compare';
+
 import {
   clearGlobalStateStorage,
   getConfiguration,
@@ -39,10 +43,8 @@ import {
 } from './util';
 
 import { APIServicePanelProvider } from './webviewPanelProviders/serviceDetail';
-// import LearnMoreWebviewPanelProvider from './webviewPanelProviders/learnMore';
 import { CONFIG_KEY_SPEC_FORMAT, MEM_CACHE } from '../const';
 import {
-  SHOW_LEARN_MORE_COMMAND,
   WELCOME_COMMAND,
   CONFIGURE_EXPLORER_COMMAND,
 } from '../commands';
@@ -50,9 +52,10 @@ import {
 let extensionContext: ExtensionContext;
 let memCache = {};
 function startAPIInsights(context: ExtensionContext) {
+  specDiagnosticsRegister(context, isEmpty(offlineLinter) ? undefined : offlineLinter);
+
   extensionContext = context;
   memCache = setupAxiosCache(context);
-  specDiagnosticsRegister(context);
   fileViewerRegister(context);
   specDiffRegister(context);
   specCompare(context);
@@ -85,13 +88,7 @@ function startAPIInsights(context: ExtensionContext) {
         openSetting();
       },
     ),
-    vscode.commands.registerCommand(
-      SHOW_LEARN_MORE_COMMAND,
-      (hash?: string) => {
-        console.log('hash');
-        // LearnMoreWebviewPanelProvider.createOrShow(hash);
-      },
-    ),
+
     vscode.workspace.onDidChangeConfiguration(() => {
       startHandleHostBarStatusChange();
     }),

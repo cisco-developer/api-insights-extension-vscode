@@ -246,11 +246,12 @@
     ]
   },
   "main": "./dist/extension.js",
+  "browser": "./dist/web/extension.js",
   "scripts": {
     "vscode:prepublish": "npm run package",
-    "compile": "concurrently \"cd ./src/webviews && ./node_modules/.bin/tailwindcss -i tailwind.css -o ./tailwind.dist.css && webpack --mode development --config ../../webpack/webpack.config.js\" \"webpack --config ./webpack/extension.webpack.config.js\"",
-    "watch": "concurrently \"cd ./src/webviews && ./node_modules/.bin/tailwindcss -i tailwind.css -o ./tailwind.dist.css --watch \" \"cd ./src/webviews && webpack --watch --mode development --config ../../webpack/webpack.config.js\" \"webpack --watch --config ./webpack/extension.webpack.config.js\"",
-    "package": "concurrently \"cd ./src/webviews && webpack --mode production --config ../../webpack/webpack.config.js\" \"webpack --mode production --config ./webpack/extension.webpack.config.js\"",
+    "compile": "concurrently \"cd ./src/webviews && ./node_modules/.bin/tailwindcss -i tailwind.css -o ./tailwind.dist.css && webpack --mode development --config ../../webpack/webpack.config.js\" \"webpack --config ./webpack/extension.webpack.config.js\" \"npm run compile-web\"",
+    "watch": "concurrently \"cd ./src/webviews && ./node_modules/.bin/tailwindcss -i tailwind.css -o ./tailwind.dist.css --watch \" \"cd ./src/webviews && webpack --watch --mode development --config ../../webpack/webpack.config.js\" \"webpack --watch --config ./webpack/extension.webpack.config.js\" \"npm run watch-web\"",
+    "package": "concurrently \"cd ./src/webviews && webpack --mode production --config ../../webpack/webpack.config.js\" \"webpack --mode production --config ./webpack/extension.webpack.config.js\" \"npm run compile-web\"",
     "test-compile": "tsc -p ./",
     "test-watch": "tsc -watch -p ./",
     "lint:extension": "eslint .",
@@ -262,6 +263,8 @@
     "watchWithExtensionTest": "concurrently \" npm run watch \" \"npm run test:extension \" ",
     "test:extension": "jest --watch",
     "test:webviews": "cd src/webviews && npm run test",
+    "compile-web": "webpack --mode production --config ./webpack/extension-web.webpack.config.js",
+    "watch-web": "webpack --config ./webpack/extension-web.webpack.config.js --watch",
     "test": "concurrently \"npm run test:extension \" \" npm run test:webviews\" "
   },
   "devDependencies": {
@@ -278,6 +281,7 @@
     "@typescript-eslint/parser": "5",
     "axios": "^0.27.2",
     "babel-jest": "^29.1.0",
+    "buffer": "^6.0.3",
     "concurrently": "^6.0.1",
     "copy-webpack-plugin": "^11.0.0",
     "eslint": "8",
@@ -291,6 +295,8 @@
     "jest": "^29.1.1",
     "js-yaml": "^4.1.0",
     "lodash": "^4.17.21",
+    "os-browserify": "^0.3.0",
+    "path-browserify": "^1.0.1",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "ts-loader": "^8.1.0",
@@ -304,12 +310,13 @@
   },
   "dependencies": {
     "@cisco-developer/api-insights-openapi-rulesets": "0.0.9",
-    "@coliu19/ruleset-demo": "^0.0.25",
     "@reduxjs/toolkit": "^1.8.2",
     "@stoplight/json": "^3.20.1",
     "@stoplight/spectral-rulesets": "^1.8.0",
     "@vscode/codicons": "^0.0.29",
     "axios-cache-interceptor": "^0.10.7",
-    "querystring": "^0.2.1"
+    "process": "^0.11.10",
+    "querystring": "^0.2.1",
+    "vscode-uri": "^3.0.6"
   }
 }

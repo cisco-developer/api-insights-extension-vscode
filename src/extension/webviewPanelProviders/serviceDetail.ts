@@ -26,7 +26,7 @@ import {
 import {
   getConfigurationMsgInterceptor,
   vscodeCommandExecuteMsgInterceptor,
-  saveFileMsgInterceptor,
+  // saveFileMsgInterceptor,
   sendRequestMsgInterceptor,
   vscodeGetObjectValueMsgInterceptor,
   getSpecsAnalysesInterceptor,
@@ -156,7 +156,7 @@ export class APIServicePanelProvider {
 
       getConfigurationMsgInterceptor(webview, data);
 
-      saveFileMsgInterceptor(webview, data);
+      // saveFileMsgInterceptor(webview, data);
 
       vscodeCommandExecuteMsgInterceptor(webview, data);
 
