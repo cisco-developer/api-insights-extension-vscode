@@ -37,7 +37,7 @@ import {
 import { getQueryFromSpecUri } from '../util';
 import { FILE_SCHEME, FileQuery } from '../../types';
 import { fetchServices, fetchServiceSpecs } from '../services';
-import { uploadMemCache } from '../fileViewer';
+import { downloadMemCache } from '../fileViewer';
 import { getConfiguration } from '../util/extUtils';
 
 function hasEndpoint() {
@@ -355,7 +355,7 @@ function selectSpecCompareItemCommand(uri: Uri) {
     collectRemoteSpecInputs();
   } else {
     const { path } = uri;
-    const meta = uploadMemCache.get(path);
+    const meta = downloadMemCache.get(path);
     if (meta) {
       collectDownloadSpecInputs(meta);
     } else {

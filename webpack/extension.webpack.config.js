@@ -17,6 +17,7 @@
  */
 
 const path = require('path');
+const webpack = require("webpack");
 const CopyPlugin = require('copy-webpack-plugin');
 
 const root = path.resolve(__dirname, '..');
@@ -46,6 +47,10 @@ module.exports = function (env, argv) {
     resolve: {
       // support reading TypeScript and JavaScript files, 📖 -> https://github.com/TypeStrong/ts-loader
       extensions: ['.ts', '.js'],
+      alias: {
+        // provides alternate implementation for node module and source files
+        '@cisco-developer/api-insights-local-linter': path.resolve(__dirname, '..', 'src/extension/diagnostic/spectralLinter.ts'),
+      },
     },
     module: {
       rules: [

@@ -33,6 +33,5 @@ export const UPDATE_BAR_STATUS_COMMAND = `${BASE_NAME}.updateBarStatus`;
 export const UPDATE_FILE_DIAGNOSTIC_COLLECTION_COMMAND = `${BASE_NAME}.updateFileDiagnosticCollection`;
 export const SAVE_ON_LOCAL_COMMAND = `${BASE_NAME}.saveOnLocal`;
 export const UPLOAD_COMMAND = `${BASE_NAME}.uploadToCloud`;
-export const SHOW_LEARN_MORE_COMMAND = `${BASE_NAME}.showLearnMore`;
 export const WELCOME_COMMAND = `${BASE_NAME}.welcome`;
 export const CONFIGURE_EXPLORER_COMMAND = `${BASE_NAME}.configureExplorer`;
