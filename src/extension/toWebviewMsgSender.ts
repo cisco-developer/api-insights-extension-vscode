@@ -38,7 +38,7 @@ import {
 import { getTableData } from './util/compliance';
 import { getUriBySpec } from './util';
 import { DiffSummaryChangeType } from '../const';
-import { uploadMemCache } from './fileViewer';
+import { downloadMemCache } from './fileViewer';
 
 export function postConfigurationChangeMsgToWebview(
   webview: WebviewVsc | undefined,
@@ -69,7 +69,7 @@ export function postAPIServiceMsgToWebview(
 export async function postUploadHistoryUpdateToWebview(
   webview: WebviewVsc | undefined,
 ) {
-  const uploadHistory = await uploadMemCache.all();
+  const uploadHistory = await downloadMemCache.all();
   if (webview) {
     webview.postMessage({
       id: ID_GETTER(),

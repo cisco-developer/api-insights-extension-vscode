@@ -52,7 +52,7 @@ import {
 import { specUploadToCloud } from '../services';
 import { APIServicePanelProvider } from '../webviewPanelProviders/serviceDetail';
 import fsProvider from './fsProvider';
-import UploadMemCache from './uploadMemCache';
+import DownloadMemCache from './downloadMemCache';
 
 const { joinPath: join } = Utils;
 
@@ -74,7 +74,7 @@ enum UPLOADED_ACTION {
 }
 
 // eslint-disable-next-line import/no-mutable-exports
-export let uploadMemCache: UploadMemCache;
+export let downloadMemCache: DownloadMemCache;
 
 class FileManager {
   private activeTabs: any = {};
@@ -162,7 +162,7 @@ class FileManager {
     if (uri) {
       await workspace.fs.writeFile(uri, stringToUint8Array(document.getText()));
       window.showInformationMessage(`${fileName} saved on local successfully.`);
-      uploadMemCache.set(uri.path, getQueryFromSpecUri(originUri));
+      downloadMemCache.set(uri.path, getQueryFromSpecUri(originUri));
     }
 
     if (show && uri) {
@@ -333,7 +333,7 @@ async function readFileCommand(
 ) {
   if (typeof spec === 'string') {
     if (!await exists(Uri.file(spec))) {
-      uploadMemCache.delete(spec);
+      downloadMemCache.delete(spec);
     }
     await commands.executeCommand('vscode.open', Uri.file(spec));
     return;
@@ -384,7 +384,7 @@ async function uploadToCloudCommand(uri: Uri) {
 }
 
 export default function register(context: ExtensionContext) {
-  uploadMemCache = UploadMemCache.run(
+  downloadMemCache = DownloadMemCache.run(
     context,
     DEFAULT_MSG_TYPES.UPLOAD_HISTORY_UPDATE,
   );

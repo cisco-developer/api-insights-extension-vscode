@@ -49,7 +49,7 @@ module.exports = function (env, argv) {
       extensions: ['.ts', '.js'],
       alias: {
         // provides alternate implementation for node module and source files
-        '@cisco-developer/api-insights-offline-linter': path.resolve(__dirname, '..', 'src/extension/diagnostic/spectralLinter.ts'),
+        '@cisco-developer/api-insights-local-linter': path.resolve(__dirname, '..', 'src/extension/diagnostic/spectralLinter.ts'),
       },
     },
     module: {

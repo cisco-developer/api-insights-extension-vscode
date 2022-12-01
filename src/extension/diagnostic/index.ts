@@ -55,10 +55,10 @@ function checkConfigurationAvailable() {
   }
 }
 
-class ServiceLinter {
+class LinterController {
   public lintSpec;
 
-  constructor(private offlineLinter?: Linter) {
+  constructor(private localLinter?: Linter) {
     this.lintSpec = debounce(this.lint, 2000, this);
   }
 
@@ -131,14 +131,14 @@ class ServiceLinter {
   ) {
     if (checkDocument(document)) {
       if (configurationAvailable) {
-        if (this.offlineLinter) {
-          this.offlineLinter.deleteDiagnostic(document.uri);
+        if (this.localLinter) {
+          this.localLinter.deleteDiagnostic(document.uri);
         }
         this.lintSpec(document.getText(), document, scenes);
       } else {
         await this.cleanFileDiagnostic(document.uri);
-        if (this.offlineLinter) {
-          this.offlineLinter.lint(document);
+        if (this.localLinter) {
+          this.localLinter.lint(document);
         }
       }
     }
@@ -197,9 +197,9 @@ class ServiceLinter {
   }
 }
 
-export default async function start(context: ExtensionContext, offlineLinter?:Linter) {
+export default async function start(context: ExtensionContext, localLinter?:Linter) {
   FileDiagnostic.register(context);
-  const linter = new ServiceLinter(offlineLinter);
+  const linter = new LinterController(localLinter);
 
   checkConfigurationAvailable();
 
@@ -234,7 +234,7 @@ export default async function start(context: ExtensionContext, offlineLinter?:Li
     }),
     languages.registerCodeActionsProvider(
       'json',
-      new Solutions(FileDiagnostic.fileDiagnostics, offlineLinter),
+      new Solutions(FileDiagnostic.fileDiagnostics, localLinter),
       {
         providedCodeActionKinds: Solutions.providedCodeActionsKind,
       },

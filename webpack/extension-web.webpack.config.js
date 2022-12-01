@@ -58,7 +58,7 @@ module.exports = function (env, argv) {
       alias: {
         // provides alternate implementation for node module and source files
         os: "os-browserify",
-        '@cisco-developer/api-insights-offline-linter': false,
+        '@cisco-developer/api-insights-local-linter': false,
       },
       fallback: {
         // Webpack 5 no longer polyfills Node.js core modules automatically.

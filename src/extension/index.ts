@@ -19,7 +19,7 @@
 import * as vscode from 'vscode';
 import { ExtensionContext } from 'vscode';
 // @ts-ignore
-import offlineLinter from '@cisco-developer/api-insights-offline-linter';
+import localLinter from '@cisco-developer/api-insights-local-linter';
 import { isEmpty } from 'lodash';
 import { SidebarWebviewProvider } from './webviewPanelProviders/serviceList';
 import { DiffSummaryProvider } from './webviewPanelProviders/diffSummary';
@@ -52,7 +52,7 @@ import {
 let extensionContext: ExtensionContext;
 let memCache = {};
 function startAPIInsights(context: ExtensionContext) {
-  specDiagnosticsRegister(context, isEmpty(offlineLinter) ? undefined : offlineLinter);
+  specDiagnosticsRegister(context, isEmpty(localLinter) ? undefined : localLinter);
 
   extensionContext = context;
   memCache = setupAxiosCache(context);

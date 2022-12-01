@@ -14,7 +14,7 @@ import { Configuration } from '../../common';
 import { getConfiguration } from '../util/extUtils';
 import { exists } from '../util';
 
-export default class UploadMemCache extends EventEmitter {
+export default class DownloadMemCache extends EventEmitter {
   private changed = false;
 
   constructor(
@@ -31,7 +31,7 @@ export default class UploadMemCache extends EventEmitter {
       state = {};
       context.globalState.update(UPLOAD_MEM_CACHE, state);
     }
-    const cache = new UploadMemCache(
+    const cache = new DownloadMemCache(
       state as UploadCache,
       context,
       updateEventName,

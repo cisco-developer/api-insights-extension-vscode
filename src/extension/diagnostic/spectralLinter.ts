@@ -22,9 +22,9 @@ export class SpectralLinter implements Linter {
 
   public analysesMap: { [key: string]: Analyses[] } = {};
 
-  constructor(ruleset: any) {
+  constructor() {
     this.spectral = new SpectralCore.Spectral();
-    this.spectral.setRuleset(ruleset);
+    this.spectral.setRuleset(rulesets);
     this.collection = vscode.languages.createDiagnosticCollection(
       this.collectionName,
     );
@@ -82,6 +82,6 @@ export class SpectralLinter implements Linter {
   }
 }
 
-const spectralLinter = new SpectralLinter(rulesets);
+const spectralLinter = new SpectralLinter();
 
 export default spectralLinter;

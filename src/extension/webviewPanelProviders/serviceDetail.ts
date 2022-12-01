@@ -36,7 +36,7 @@ import { API_SERVICE_MST_TYPES } from '../../common';
 import { clearGlobalStateStorage, getNonce } from '../util/extUtils';
 import { setStoreServices } from '../store';
 import { SidebarWebviewProvider } from './serviceList';
-import { uploadMemCache } from '../fileViewer';
+import { downloadMemCache } from '../fileViewer';
 
 // eslint-disable-next-line import/prefer-default-export
 export class APIServicePanelProvider {
@@ -171,7 +171,7 @@ export class APIServicePanelProvider {
         postUploadHistoryUpdateToWebview(this.panel.webview);
       }
     });
-    uploadMemCache.on(uploadMemCache.updateEventName, () => {
+    downloadMemCache.on(downloadMemCache.updateEventName, () => {
       postUploadHistoryUpdateToWebview(this.panel.webview);
     });
   }
