@@ -1,7 +1,7 @@
 {
   "name": "api-insights",
   "displayName": "API Insights",
-  "description": "Monitoring and Improving API Quality",
+  "description": "Monitoring and Improving API Quality and Security",
   "author": "cisco-developer@cisco.com",
   "license": "LICENSE.txt",
   "version": "0.2.2",
