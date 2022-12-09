@@ -19,10 +19,10 @@
 import { TextDocument, Range, WorkspaceEdit, Position } from 'vscode';
 import { Analyse } from '../../types';
 
-export type FixRange=Range|{start:Position, end:Position}
+export type FixRange = Range | { start: Position, end: Position }
 
 export type Fix = (
-  analyse: Analyse&{range:{ start: Position; end: Position; }},
+  analyse: Analyse & { range: { start: Position; end: Position; } },
   document: TextDocument,
   range: Range
 ) => { title: string; edit: WorkspaceEdit } | null;
