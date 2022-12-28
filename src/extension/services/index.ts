@@ -108,7 +108,6 @@ export async function fetchAnalyzersMeta(): Promise<AnalyzersMetaType[]> {
     url: '/analyzers',
     params: { status: 'active' },
   });
-
   // hard code for test
   return data.filter((_: AnalyzersMetaType) => _.name_id !== 'security');
 }

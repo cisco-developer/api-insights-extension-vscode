@@ -86,6 +86,15 @@ export class DiffSummaryProvider implements vscode.WebviewViewProvider {
   }
 
   private getHtmlForWebview(webview: vscode.Webview) {
+    const styleUri = webview.asWebviewUri(
+      vscode.Uri.joinPath(this.extensionUri, 'dist', 'diff-summary.css'),
+    );
+    const styleAntdLightUri = webview.asWebviewUri(
+      vscode.Uri.joinPath(this.extensionUri, 'dist', 'antd.light.css'),
+    );
+    const styleAntdDarkUri = webview.asWebviewUri(
+      vscode.Uri.joinPath(this.extensionUri, 'dist', 'antd.dark.css'),
+    );
     const styleResetUri = webview.asWebviewUri(
       vscode.Uri.joinPath(this.extensionUri, 'media', 'reset.css'),
     );
@@ -128,14 +137,16 @@ export class DiffSummaryProvider implements vscode.WebviewViewProvider {
              Use a content security policy to only allow loading images from https or from our extension directory,
              and only allow scripts that have a specific nonce.
         -->
-        <meta http-equiv="Content-Security-Policy" content="style-src 'unsafe-inline' ${webview.cspSource}; script-src 'nonce-${nonce}';">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link href="${styleResetUri}" rel="stylesheet">
         <link href="${styleVSCodeUri}" rel="stylesheet">
         <link href="${codiconsUri}" rel="stylesheet">
+        <link href="${styleUri}" rel="stylesheet">
         <script nonce="${nonce}">
          const successUri = "${successUri}"
          const errorUri = "${errorUri}"
+         const styleAntdLightUri="${styleAntdLightUri}"
+         const styleAntdDarkUri="${styleAntdDarkUri}"
          const webviewVsc = acquireVsCodeApi();
          let globalInitialized=false
         </script>

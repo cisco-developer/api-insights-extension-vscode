@@ -324,6 +324,7 @@ function isVersion3(text: SpecProps) {
 
 function isSpecFile(document: TextDocument) {
   const text = document.getText();
+  if (!text) return false;
   try {
     const parseText = YAML.parse(text);
 

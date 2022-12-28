@@ -18,7 +18,7 @@
 
 import ReactDOM from 'react-dom';
 
-import 'antd/dist/antd.dark.min.css';
+// import 'antd/dist/antd.dark.min.css';
 import 'react-circular-progressbar/dist/styles.css';
 import './index.scss';
 import { Card } from 'antd';
@@ -27,6 +27,7 @@ import { useState } from 'react';
 import { CircularProgressbarWithChildren } from 'react-circular-progressbar';
 import { postVSCodeCommandExecuteMsgToExtension } from '../toExtensionMessageSender';
 import { CONFIGURE_EXPLORER_COMMAND } from '../../commands';
+import useAntdThemeCss from '../hooks/useAntdThemeCss';
 
 const unlockedFeatures: { title: string, description: string }[] = [
   {
@@ -48,7 +49,7 @@ const unlockedFeatures: { title: string, description: string }[] = [
 ];
 function WelcomePage() {
   const [activeUnlockFeatureIdx, setActiveUnlockFfeatureIdx] = useState(0);
-
+  useAntdThemeCss();
   const onConfigItNowClicked = () => {
     postVSCodeCommandExecuteMsgToExtension(webviewVsc, 'executeCommand', [CONFIGURE_EXPLORER_COMMAND], 'commands');
   };

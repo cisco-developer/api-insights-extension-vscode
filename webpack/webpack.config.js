@@ -17,24 +17,50 @@
  */
 
 const path = require('path');
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
+const TerserPlugin = require("terser-webpack-plugin");
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
+const { ESBuildMinifyPlugin } = require('esbuild-loader')
 
 const srcRoot = path.resolve(__dirname, '..', 'src', 'webviews');
 module.exports = (env, argv) => {
   let { mode, devtool } = argv;
   const isProd = mode === 'production';
-  devtool = isProd ? undefined : 'inline-source-map';
+  devtool = isProd ? 'nosources-source-map' : 'inline-source-map';
   return {
     entry: {
       'service-detail': path.resolve(srcRoot, 'service-detail', 'index.tsx'),
       'service-list': path.resolve(srcRoot, 'service-list', 'index.tsx'),
       'diff-summary': path.resolve(srcRoot, 'diff-summary', 'index.tsx'),
       welcome: path.resolve(srcRoot, 'welcome', 'index.tsx'),
+      'antd-css':path.resolve(srcRoot, 'antd-css.ts')
     },
+    // entry: {
+    //   shared: ['react', 'react-dom'],
+    //   'service-detail': {
+    //     import:path.resolve(srcRoot, 'service-detail', 'index.tsx'),
+    //     dependOn: 'shared'
+    //   },
+    //   'service-list': {
+    //     import:path.resolve(srcRoot, 'service-list', 'index.tsx'),
+    //     dependOn: 'shared'
+    //   },
+    //   'diff-summary': {
+    //     import:path.resolve(srcRoot, 'diff-summary', 'index.tsx'),
+    //     dependOn: 'shared'
+    //   },
+    //   'welcome': {
+    //     import:path.resolve(srcRoot, 'welcome', 'index.tsx'),
+    //     dependOn: 'shared'
+    //   }
+    // },
     mode,
     devtool,
     output: {
       path: path.resolve(__dirname, '..', 'dist'),
       filename: '[name].bundle.js',
+      chunkFilename: '[name].bundle.js',
     },
     resolve: {
       modules: [path.resolve(srcRoot, 'node_modules')],
@@ -55,6 +81,7 @@ module.exports = (env, argv) => {
                     {
                       // "targets": "defaults"
                       targets: { node: 'current' },
+                      modules:false
                     },
                   ],
                   [
@@ -64,13 +91,25 @@ module.exports = (env, argv) => {
                     },
                   ],
                 ],
+                // plugins: [
+                //   ["import", { "libraryName": "antd", "libraryDirectory": "es",style:"css"}],
+                //   ["import", {
+                //     "libraryName": "@ant-design/plots",
+                //     "libraryDirectory": "es"
+                //   }],
+                // ]
               },
             },
           ],
         },
         {
           test: /\.(scss|css)$/,
-          use: ['style-loader', 'css-loader', 'sass-loader'],
+          use: [
+            MiniCssExtractPlugin.loader,
+            { loader: "css-loader"},
+            { loader: "sass-loader"},
+          ],
+          sideEffects:true
         },
         {
           test: /\.(eot|ttf|woff|woff2)$/i,
@@ -88,12 +127,75 @@ module.exports = (env, argv) => {
             },
           ],
         },
+        // {
+        //   test: /\.tsx?$/,
+        //   include: path.resolve(__dirname, '..'),
+        //   use: ['ts-loader'],
+        // },
         {
           test: /\.tsx?$/,
-          include: path.resolve(__dirname, '..'),
-          use: ['ts-loader'],
+          loader: 'esbuild-loader',
+          options: {
+            loader: 'tsx',  // Or 'ts' if you don't need tsx
+            target: 'es2015'
+          }
         },
       ],
+    },
+    plugins:[
+      new MiniCssExtractPlugin({
+        // runtime: false,
+      }),
+      new BundleAnalyzerPlugin()
+    ],
+    optimization: {
+      //chunkIds:"named",
+      // splitChunks: {
+      //   cacheGroups: {
+      //     'react-dom': {
+      //       test: /[\\/]node_modules[\\/]react-dom[\\/]/,
+      //       name: 'react-dom',
+      //       chunks: 'all',
+      //     },
+      //     react: {
+      //       test: /[\\/]node_modules[\\/]react[\\/]/,
+      //       name: 'react',
+      //       chunks: 'all',
+      //     }
+      //   },
+      // },
+    },
+    optimization: {
+      chunkIds:"named",
+      // minimize: true,
+      minimizer:[
+        new ESBuildMinifyPlugin({
+            css: true,
+            target: 'es2015'
+        }),
+        // new CssMinimizerPlugin({
+        //   minify: CssMinimizerPlugin.cssoMinify,
+        // }),
+        // new TerserPlugin({
+        //   terserOptions: {
+        //     compress: true,
+        //   },
+        // }),
+      ],
+      splitChunks: {
+        cacheGroups: {
+          'antd-light-css': {
+            test: /antd.light/,
+            name: 'antd.light',
+            chunks: 'initial',
+          },
+          'antd-dark-css': {
+            test: /antd.dark/,
+            name: 'antd.dark',
+            chunks: 'initial',
+          }
+        },
+      },
     },
   };
 };

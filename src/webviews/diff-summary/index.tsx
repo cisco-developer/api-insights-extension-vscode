@@ -20,10 +20,10 @@ import React, {
   useState, useCallback, useMemo, useEffect,
 } from 'react';
 import ReactDOM from 'react-dom';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { Button, Card, Switch, Skeleton } from 'antd';
 
-import 'antd/dist/antd.dark.min.css';
+// import 'antd/dist/antd.dark.min.css';
 import './index.scss';
 import { DiffSpecs } from './types';
 import { useDiffSummaryUpdateMsg } from '../msgListenerHooks';
@@ -31,12 +31,12 @@ import { DiffSummaryChangeType } from '../../const';
 import Score from './components/Score';
 import Changes from './components/Changes';
 import Summary from '../components/Summary';
-import Loading from './components/Loading';
 import { getSpecFileName } from '../../util';
 import useGenDiffSummary from './hooks/useGenDiffSummary';
 import { DIFF_SUMMARY_MSG_TYPES } from '../../common';
 import { viewChangelog } from '../Service';
 import ChangesSkeleton from './components/ChangesSkeleton';
+import useAntdThemeCss from '../hooks/useAntdThemeCss';
 
 const gridStyle: React.CSSProperties = {
   width: '50%',
@@ -61,6 +61,7 @@ function BaseComponent() {
 
   const diffSpecs = useMemo(() => ({ oldSpec, newSpec }), [oldSpec, newSpec]);
 
+  useAntdThemeCss();
   useEffect(() => {
     // @ts-ignore
     webviewVsc.postMessage({ type: DIFF_SUMMARY_MSG_TYPES.APP_IS_READY });
@@ -220,7 +221,7 @@ function BaseComponent() {
                       oldSpec.revision,
                     )
                 }
-                update={`Updated at ${moment(oldSpec.updated_at).format(
+                update={`Updated at ${dayjs(oldSpec.updated_at).format(
                   TIME_FORMATE,
                 )}`}
               />
@@ -240,7 +241,7 @@ function BaseComponent() {
                       newSpec.revision,
                     )
                 }
-                update={`Updated at ${moment(newSpec.updated_at).format(
+                update={`Updated at ${dayjs(newSpec.updated_at).format(
                   TIME_FORMATE,
                 )}`}
               />

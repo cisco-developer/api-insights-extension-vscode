@@ -126,7 +126,12 @@ export class WelcomePanelProvider {
     const scriptUri = webview.asWebviewUri(
       vscode.Uri.joinPath(this.extensionUri, 'dist', 'welcome.bundle.js'),
     );
-
+    const styleAntdLightUri = webview.asWebviewUri(
+      vscode.Uri.joinPath(this.extensionUri, 'dist', 'antd.light.css'),
+    );
+    const styleAntdDarkUri = webview.asWebviewUri(
+      vscode.Uri.joinPath(this.extensionUri, 'dist', 'antd.dark.css'),
+    );
     // Uri to load styles into webview
     const stylesResetUri = webview.asWebviewUri(
       vscode.Uri.joinPath(this.extensionUri, 'media', 'reset.css'),
@@ -156,13 +161,14 @@ export class WelcomePanelProvider {
       Use a content security policy to only allow loading images from https or from our extension directory,
       and only allow scripts that have a specific nonce.
          -->
-        <meta http-equiv="Content-Security-Policy" content="style-src 'unsafe-inline' ${webview.cspSource}; script-src 'nonce-${nonce}' 'self' blob:;">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
         <link href="${stylesResetUri}" rel="stylesheet">
         <link href="${stylesMainUri}" rel="stylesheet">
         <link href="${codiconsUri}" rel="stylesheet">
         <script nonce="${nonce}">
+        const styleAntdLightUri="${styleAntdLightUri}"
+         const styleAntdDarkUri="${styleAntdDarkUri}"
         const webviewVsc = acquireVsCodeApi();
         </script>
         </head>

@@ -21,7 +21,7 @@ import {
   EditOutlined,
   MoreOutlined,
 } from '@ant-design/icons';
-import { VSCodeButton } from '@vscode/webview-ui-toolkit/react';
+// import { VSCodeButton } from '@vscode/webview-ui-toolkit/react';
 import {
   Breadcrumb, Button, Dropdown, Menu, Tooltip,
 } from 'antd';
@@ -160,11 +160,12 @@ function OpenInEditorChildrenWrapper(props: { history?: any[] }) {
     history = [];
   }
   return (
-    <VSCodeButton appearance="secondary">
+    // <VSCodeButton appearance></VSCodeButton>
+    <Button>
       <EditOutlined style={{ marginRight: 8 }} />
       Open in Editor
       {history.length ? <span className="open-in-editor_icon_down codicon codicon-chevron-down" /> : null}
-    </VSCodeButton>
+    </Button>
   );
 }
 function ServiceHeader(props: ServiceHeaderProps) {

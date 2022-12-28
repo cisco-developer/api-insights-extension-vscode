@@ -70,6 +70,15 @@ export class SidebarWebviewProvider implements vscode.WebviewViewProvider {
   }
 
   private getHtmlForWebview(webview: vscode.Webview) {
+    const styleUri = webview.asWebviewUri(
+      vscode.Uri.joinPath(this.extensionUri, 'dist', 'service-list.css'),
+    );
+    const styleAntdLightUri = webview.asWebviewUri(
+      vscode.Uri.joinPath(this.extensionUri, 'dist', 'antd.light.css'),
+    );
+    const styleAntdDarkUri = webview.asWebviewUri(
+      vscode.Uri.joinPath(this.extensionUri, 'dist', 'antd.dark.css'),
+    );
     const styleResetUri = webview.asWebviewUri(
       vscode.Uri.joinPath(this.extensionUri, 'media', 'reset.css'),
     );
@@ -95,6 +104,9 @@ export class SidebarWebviewProvider implements vscode.WebviewViewProvider {
     const scriptUri = webview.asWebviewUri(
       vscode.Uri.joinPath(this.extensionUri, 'dist', 'service-list.bundle.js'),
     );
+    const sharedUri = webview.asWebviewUri(
+      vscode.Uri.joinPath(this.extensionUri, 'dist', 'shared.bundle.js'),
+    );
     const codiconsUri = webview.asWebviewUri(
       vscode.Uri.joinPath(
         this.extensionUri,
@@ -104,7 +116,8 @@ export class SidebarWebviewProvider implements vscode.WebviewViewProvider {
         'codicon.css',
       ),
     );
-
+    // <link href="https://cdnjs.cloudflare.com/ajax/libs/antd/4.19.5/antd.dark.min.css" rel="prefetch">
+    //     <link href="https://cdnjs.cloudflare.com/ajax/libs/antd/4.19.5/antd.dark.css" rel="prefetch">
     // Use a nonce to only allow a specific script to be run.
     const nonce = getNonce();
 
@@ -117,16 +130,18 @@ export class SidebarWebviewProvider implements vscode.WebviewViewProvider {
              Use a content security policy to only allow loading images from https or from our extension directory,
              and only allow scripts that have a specific nonce.
         -->
-        <meta http-equiv="Content-Security-Policy" content="style-src 'unsafe-inline' ${webview.cspSource}; script-src 'nonce-${nonce}';">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link href="${styleResetUri}" rel="stylesheet">
         <link href="${styleVSCodeUri}" rel="stylesheet">
         <link href="${codiconsUri}" rel="stylesheet">
+        <link href="${styleUri}" rel="stylesheet">
         <script nonce="${nonce}">
          const darkLogoUri = "${darkLogoUri}"
          const lightLogoUri = "${lightLogoUri}"
          const successUri = "${successUri}"
          const errorUri = "${errorUri}"
+         const styleAntdLightUri="${styleAntdLightUri}"
+         const styleAntdDarkUri="${styleAntdDarkUri}"
          const webviewVsc = acquireVsCodeApi();
         </script>
     </head>

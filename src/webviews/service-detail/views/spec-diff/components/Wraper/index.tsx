@@ -16,8 +16,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { VSCodeButton, VSCodeDivider } from '@vscode/webview-ui-toolkit/react';
+// import { VSCodeButton, VSCodeDivider } from '@vscode/webview-ui-toolkit/react';
 import { LeftOutlined } from '@ant-design/icons';
+import { Button, Divider } from 'antd';
 import { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './index.scss';
@@ -68,8 +69,8 @@ export default function SpecDiffWraper(props: Props) {
         </div>
         <div className="spec-diff_header_right">
           {data.specDiffType === DiffFilterTypes.SHADOW_DIFF ? (
-            <VSCodeButton
-              appearance="secondary"
+            // VSCodeButton
+            <Button
               onClick={() => {
                 openFile(spec);
               }}
@@ -77,23 +78,24 @@ export default function SpecDiffWraper(props: Props) {
               <span className="codicon codicon-code" />
               {' '}
               Open Spec
-            </VSCodeButton>
+            </Button>
           ) : null}
 
           {data.specDiffType !== DiffFilterTypes.SHADOW_DIFF ? (
-            <VSCodeButton
-              appearance="secondary"
+            // VSCodeButton
+            <Button
               onClick={() => {
                 openFile(spec, data.path);
               }}
             >
               <span className="codicon codicon-file-symlink-file" />
               Go to Definition
-            </VSCodeButton>
+            </Button>
           ) : null}
         </div>
       </header>
-      <VSCodeDivider role="separator" />
+      {/* VSCodeDivider */}
+      <Divider />
       <div className="spec-diff_summary_wapper">
         <h2 className="spec-diff_summary_title">Summary</h2>
         <ul className="spec-diff_summary_list">

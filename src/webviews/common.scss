@@ -16,12 +16,12 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-.vscode-light {
-    @import "~antd/dist/antd.min";
-}
-.vscode-dark {
-    @import "~antd/dist/antd.dark.min";
-}
+// .vscode-light {
+//     @import "~antd/dist/antd";
+// }
+// .vscode-dark {
+//     @import "~antd/dist/antd.dark";
+// }
 @import "./tailwind.dist";
 
 .center {

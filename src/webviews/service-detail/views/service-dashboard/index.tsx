@@ -29,6 +29,7 @@ import {
   EditOutlined,
   LoadingOutlined,
 } from '@ant-design/icons';
+// import 'react-circular-progressbar/dist/styles.css';
 import './index.scss';
 import {
   Button,

@@ -41,9 +41,11 @@ import Loader from '../service-detail/components/Loader';
 import { useConfiguration, useRecieveReloadMsg } from '../msgListenerHooks';
 import { fetchOrganizations, fetchServices, getScoreLevel } from '../Service';
 
-import 'antd/dist/antd.dark.min.css';
 import './index.scss';
+// import '../antd.dark.scss';
+// import '../antd.light.scss';
 import { CONFIGURE_EXPLORER_COMMAND, WELCOME_COMMAND } from '../../commands';
+import useAntdThemeCss from '../hooks/useAntdThemeCss';
 
 const { Panel } = Collapse;
 
@@ -68,6 +70,7 @@ function BaseComponent() {
   );
 
   const cfg = useConfiguration(webviewVsc);
+  useAntdThemeCss();
 
   const reloadPage = async (force?: boolean) => {
     setIsLoading(true);

@@ -39,7 +39,6 @@ export default function List(props: ListProps) {
   const { hostId, data, loading } = props;
   const [params, setParams] = useState<ListParams>({});
   const { spec, list, service } = data || {};
-
   const onAffectedItemsClick = useCallback(
     (analyses: Analyses) => {
       const { data } = analyses;

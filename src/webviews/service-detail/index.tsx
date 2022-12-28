@@ -16,7 +16,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useEffect, createContext } from 'react';
+import { useEffect, createContext, lazy, Suspense } from 'react';
 import ReactDOM from 'react-dom';
 import { RecoilRoot } from 'recoil';
 import {
@@ -27,9 +27,10 @@ import {
   useNavigate,
   useLocation,
 } from 'react-router-dom';
-import RevisionDetail from './views/revision-detail';
-import SpecDiff from './views/spec-diff';
+// import RevisionDetail from './views/revision-detail';
+// import SpecDiff from './views/spec-diff';
 import Loader from './components/Loader';
+// import 'antd/dist/antd.dark.min.css';
 import 'react-circular-progressbar/dist/styles.css';
 import './index.scss';
 import {
@@ -38,7 +39,12 @@ import {
 } from '../msgListenerHooks';
 import { API_SERVICE_MST_TYPES } from '../../common';
 import { UploadCache } from '../../types';
-import ServiceDashboard from './views/service-dashboard';
+import useAntdThemeCss from '../hooks/useAntdThemeCss';
+// import ServiceDashboard from './views/service-dashboard';
+
+const ServiceDashboard = lazy(() => import(/* webpackChunkName: "serviceDashboard" */'./views/service-dashboard'));
+const RevisionDetail = lazy(() => import(/* webpackChunkName: "revisionDetail" */'./views/revision-detail'));
+const SpecDiff = lazy(() => import(/* webpackChunkName: "specDiff" */'./views/spec-diff'));
 
 export const uploadHistoryContext = createContext<UploadCache>({});
 
@@ -50,6 +56,7 @@ function App() {
 
   const defaultPath = '/dashboard/overall';
   const location = useLocation();
+  useAntdThemeCss();
   useEffect(() => {
     if (location.pathname !== defaultPath) { navigate(defaultPath); }
     window.scrollTo(0, 0);
@@ -95,7 +102,9 @@ function App() {
 ReactDOM.render(
   <RecoilRoot>
     <MemoryRouter>
-      <App />
+      <Suspense fallback={<Loader />}>
+        <App />
+      </Suspense>
     </MemoryRouter>
   </RecoilRoot>,
   document.getElementById('app'),

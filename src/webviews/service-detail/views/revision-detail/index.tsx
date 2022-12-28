@@ -30,7 +30,7 @@ import {
   openInEditorWithProblems,
   openFile,
 } from '../../../Service';
-import 'react-circular-progressbar/dist/styles.css';
+// import 'react-circular-progressbar/dist/styles.css';
 import ServiceHeader, {
   ServiceHeaderProps,
 } from '../../components/ServiceHeader';
